@@ -99,7 +99,7 @@ export function Hero() {
                 className="flex items-center justify-center space-x-2"
               >
                 <div className={`p-2 rounded-full bg-gradient-to-r ${features[currentFeature].color}`}>
-                  {features[currentFeature].icon({ className: "h-5 w-5 text-white" })}
+                  <features[currentFeature].icon className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-lg font-semibold text-foreground">{features[currentFeature].text}</span>
               </motion.div>
