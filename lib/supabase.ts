@@ -7,7 +7,13 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error("Missing Supabase environment variables")
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true,
+  },
+})
 
 // Auth functions
 export const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
@@ -33,7 +39,11 @@ export const signUp = async (email: string, password: string, firstName: string,
           email: data.user.email,
           first_name: firstName,
           last_name: lastName,
+          name: `${firstName} ${lastName}`,
           role: "user",
+          auth_provider: "email",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         },
       ])
 

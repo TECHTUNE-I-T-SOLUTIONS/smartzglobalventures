@@ -6,25 +6,24 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   FileText,
   Printer,
-  Scan,
-  Copy,
-  BookMarkedIcon as Binding,
-  Camera,
+  Edit3,
+  BookOpen,
+  Layers,
+  PenTool,
   MessageCircle,
-  Upload,
   CheckCircle,
   Clock,
   Star,
   Users,
   Award,
   Zap,
-  Truck,
   ArrowRight,
   Phone,
   Mail,
   MapPin,
   Package,
-  Building2,
+  GraduationCap,
+  Monitor,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -37,117 +36,153 @@ import { useAuth } from "@/hooks/use-auth"
 const services = [
   {
     icon: Printer,
-    title: "Professional Printing",
-    description: "High-quality color and black & white printing services for all your business needs",
-    features: ["Color Printing", "Black & White", "Large Format", "Photo Printing", "Business Cards", "Flyers"],
-    price: "From ₦50 per page",
+    title: "Document Printing",
+    description: "High-quality printing services for assignments, projects, and academic documents",
+    features: [
+      "Assignment Printing",
+      "Project Documentation",
+      "Research Papers",
+      "Thesis Printing",
+      "Color & B/W Options",
+      "Multiple Paper Sizes",
+    ],
+    price: "From ₦20 per page",
     popular: true,
     gradient: "from-blue-500 to-cyan-500",
+    location: "Both Branches",
   },
   {
-    icon: Scan,
-    title: "Document Scanning",
-    description: "Convert your physical documents to digital format with high precision",
+    icon: Edit3,
+    title: "Document Editing",
+    description: "Professional editing and proofreading services for academic and business documents",
     features: [
-      "High Resolution",
-      "Multiple Formats",
-      "Bulk Scanning",
-      "OCR Available",
-      "Cloud Storage",
-      "Secure Processing",
+      "Grammar & Spelling Check",
+      "Content Restructuring",
+      "Academic Formatting",
+      "Citation Correction",
+      "Language Enhancement",
+      "Quick Turnaround",
     ],
-    price: "From ₦30 per page",
+    price: "From ₦1,000 per document",
     gradient: "from-green-500 to-emerald-500",
-  },
-  {
-    icon: Copy,
-    title: "Photocopying",
-    description: "Fast and reliable photocopying services with professional quality",
-    features: ["Single/Double Sided", "Collating", "Stapling", "Bulk Orders", "Same Day Service", "Quality Guarantee"],
-    price: "From ₦20 per page",
-    gradient: "from-purple-500 to-violet-500",
-  },
-  {
-    icon: Binding,
-    title: "Document Binding",
-    description: "Professional binding for reports, presentations, and important documents",
-    features: ["Spiral Binding", "Perfect Binding", "Hardcover", "Lamination", "Custom Covers", "Bulk Discounts"],
-    price: "From ₦500 per document",
-    gradient: "from-orange-500 to-red-500",
-  },
-  {
-    icon: Camera,
-    title: "Passport Photos",
-    description: "Professional passport and ID photos that meet all official requirements",
-    features: ["Instant Printing", "Multiple Copies", "Digital Copies", "Retouching", "All Sizes", "Express Service"],
-    price: "₦2,000 for 4 copies",
-    gradient: "from-pink-500 to-rose-500",
+    location: "Main Branch (University)",
   },
   {
     icon: FileText,
-    title: "Document Services",
-    description: "Complete document preparation, typing, and formatting services",
-    features: ["CV Writing", "Letter Typing", "Formatting", "Proofreading", "Translation", "Express Delivery"],
-    price: "From ₦1,000 per document",
+    title: "Document Formatting",
+    description: "Professional formatting for academic papers, reports, and business documents",
+    features: [
+      "APA/MLA Formatting",
+      "Table of Contents",
+      "Reference Lists",
+      "Header/Footer Setup",
+      "Page Numbering",
+      "Professional Layout",
+    ],
+    price: "From ₦500 per document",
+    gradient: "from-purple-500 to-violet-500",
+    location: "Main Branch (University)",
+  },
+  {
+    icon: Layers,
+    title: "Lamination Services",
+    description: "Protect your important documents with professional lamination",
+    features: [
+      "A4 Lamination",
+      "A3 Lamination",
+      "ID Card Lamination",
+      "Certificate Protection",
+      "Glossy & Matte Options",
+      "Bulk Discounts",
+    ],
+    price: "From ₦100 per document",
+    gradient: "from-orange-500 to-red-500",
+    location: "Both Branches",
+  },
+  {
+    icon: BookOpen,
+    title: "Document Binding",
+    description: "Professional binding services for projects, reports, and academic work",
+    features: [
+      "Spiral Binding",
+      "Perfect Binding",
+      "Hardcover Binding",
+      "Thesis Binding",
+      "Custom Covers",
+      "Same Day Service",
+    ],
+    price: "From ₦500 per document",
+    gradient: "from-pink-500 to-rose-500",
+    location: "Both Branches",
+  },
+  {
+    icon: PenTool,
+    title: "Project Writing & Analysis",
+    description: "Expert assistance with project writing, research, and academic analysis",
+    features: [
+      "Research Assistance",
+      "Data Analysis",
+      "Project Proposals",
+      "Literature Review",
+      "Methodology Design",
+      "Academic Writing",
+    ],
+    price: "Custom Pricing",
     gradient: "from-indigo-500 to-blue-500",
+    location: "Main Branch (University)",
+  },
+]
+
+const locations = [
+  {
+    name: "Main Branch (Educational Services)",
+    address: "Shop 4 & 5, behind the faculty of CIS, University of Ilorin PS, Ilorin, Nigeria",
+    services: "Student-focused services: Printing, Editing, Formatting, Project Writing",
+    icon: GraduationCap,
+    color: "text-blue-500",
+    primary: true,
+  },
+  {
+    name: "Second Branch (General Services)",
+    address: "Gaa-Akanbi Roundabout, Ilorin, Nigeria",
+    services: "Computer accessories, General printing, Business services",
+    icon: Monitor,
+    color: "text-purple-500",
+    primary: false,
   },
 ]
 
 const stats = [
-  { icon: Users, label: "Happy Customers", value: "10,000+", color: "text-blue-500" },
-  { icon: CheckCircle, label: "Projects Completed", value: "50,000+", color: "text-green-500" },
-  { icon: Award, label: "Years Experience", value: "15+", color: "text-purple-500" },
-  { icon: Zap, label: "Average Turnaround", value: "24hrs", color: "text-yellow-500" },
+  { icon: Users, label: "Students Served", value: "5,000+", color: "text-blue-500" },
+  { icon: CheckCircle, label: "Projects Completed", value: "15,000+", color: "text-green-500" },
+  { icon: Award, label: "Years Experience", value: "8+", color: "text-purple-500" },
+  { icon: Zap, label: "Average Turnaround", value: "Same Day", color: "text-yellow-500" },
 ]
 
 const testimonials = [
   {
-    name: "Adebayo Johnson",
-    role: "Business Owner",
+    name: "Adebayo Ogundimu",
+    role: "Computer Science Student",
     content:
-      "Excellent service! They printed my business cards and flyers with amazing quality. Very professional team and fast delivery.",
+      "Perfect for all my academic needs! They printed and bound my final year project beautifully. The editing service also helped improve my writing significantly.",
     rating: 5,
-    avatar: "AJ",
+    avatar: "AO",
   },
   {
-    name: "Sarah Okafor",
-    role: "Student",
+    name: "Fatima Al-Hassan",
+    role: "Business Student",
     content:
-      "Perfect for all my academic printing needs. Fast, affordable, and great quality. The express delivery saved my presentation!",
+      "Excellent document formatting service! They formatted my thesis according to university standards perfectly. Very professional and fast service.",
     rating: 5,
-    avatar: "SO",
+    avatar: "FA",
   },
   {
-    name: "Michael Chen",
-    role: "Consultant",
+    name: "Chinedu Okwu",
+    role: "Engineering Student",
     content:
-      "Their document binding service is top-notch. My presentations always look professional. Highly recommend their services!",
+      "Great location right behind CIS faculty. Always reliable for printing assignments and projects. The lamination service keeps my certificates safe too!",
     rating: 5,
-    avatar: "MC",
-  },
-]
-
-const deliveryOptions = [
-  {
-    icon: Truck,
-    title: "Standard Delivery",
-    description: "2-3 business days",
-    price: "₦1,500",
-    color: "text-blue-500",
-  },
-  {
-    icon: Zap,
-    title: "Express Delivery",
-    description: "Same day delivery",
-    price: "₦3,000",
-    color: "text-orange-500",
-  },
-  {
-    icon: Package,
-    title: "Pickup Service",
-    description: "Collect from our office",
-    price: "Free",
-    color: "text-green-500",
+    avatar: "CO",
   },
 ]
 
@@ -213,19 +248,19 @@ export default function BusinessCenterPage() {
               animate={{ scale: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <Building2 className="h-5 w-5" />
-              <span className="text-sm font-medium">Professional Business Services</span>
+              <GraduationCap className="h-5 w-5" />
+              <span className="text-sm font-medium">Educational & Business Services</span>
             </motion.div>
 
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              Your Complete
+              Your Academic
               <span className="block bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-                Business Solution
+                Success Partner
               </span>
             </h1>
 
             <p className="text-xl md:text-2xl mb-8 text-blue-100 leading-relaxed">
-              Professional printing, scanning, document services, and express delivery - all under one roof
+              Professional printing, editing, formatting, and project services for students and professionals in Ilorin
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
@@ -235,7 +270,7 @@ export default function BusinessCenterPage() {
                 onClick={() => setShowChat(true)}
               >
                 <MessageCircle className="mr-2 h-5 w-5" />
-                Get Instant Quote
+                Get Free Consultation
               </Button>
               <Button
                 size="lg"
@@ -247,43 +282,71 @@ export default function BusinessCenterPage() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
-
-            {/* Contact Info */}
-            <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <motion.div
-                className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <Phone className="h-4 w-4" />
-                <span>+234 123 456 7890</span>
-              </motion.div>
-              <motion.div
-                className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                <Mail className="h-4 w-4" />
-                <span>business@smartzglobal.com</span>
-              </motion.div>
-              <motion.div
-                className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 }}
-              >
-                <MapPin className="h-4 w-4" />
-                <span>Lagos, Nigeria</span>
-              </motion.div>
-            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* Locations Section */}
       <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-6 py-2 mb-6">
+              <MapPin className="h-5 w-5 text-primary" />
+              <span className="text-sm font-medium text-primary">Our Locations</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Conveniently Located in Ilorin</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Two strategic locations to serve both university students and the general public
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {locations.map((location, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
+              >
+                <Card
+                  className={`h-full hover:shadow-lg transition-all ${location.primary ? "ring-2 ring-primary/20" : ""}`}
+                >
+                  <CardHeader>
+                    <div className="flex items-start space-x-3">
+                      <div className={`p-3 rounded-lg bg-primary/10`}>
+                        <location.icon className={`h-6 w-6 ${location.color}`} />
+                      </div>
+                      <div className="flex-1">
+                        <CardTitle className="text-lg mb-2">
+                          {location.name}
+                          {location.primary && <Badge className="ml-2 text-xs">Main</Badge>}
+                        </CardTitle>
+                        <div className="flex items-start space-x-2 text-sm text-muted-foreground mb-3">
+                          <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                          <span>{location.address}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">{location.services}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <motion.div
             variants={containerVariants}
@@ -306,7 +369,7 @@ export default function BusinessCenterPage() {
       </section>
 
       {/* Services Section */}
-      <section ref={servicesRef} className="py-20 bg-background">
+      <section ref={servicesRef} className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -319,9 +382,9 @@ export default function BusinessCenterPage() {
               <Package className="h-5 w-5 text-primary" />
               <span className="text-sm font-medium text-primary">Our Services</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Professional Business Services</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Academic & Professional Services</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Comprehensive solutions tailored to meet all your business document and printing needs
+              Comprehensive solutions for students and professionals in the educational sector
             </p>
           </motion.div>
 
@@ -344,11 +407,6 @@ export default function BusinessCenterPage() {
                     </div>
                   )}
 
-                  <div
-                    className="absolute inset-0 bg-gradient-to-br opacity-5 group-hover:opacity-10 transition-opacity"
-                    style={{ backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))` }}
-                  />
-
                   <CardHeader className="relative">
                     <div
                       className={`bg-gradient-to-br ${service.gradient} text-white p-3 rounded-lg w-fit mb-4 group-hover:scale-110 transition-transform shadow-lg`}
@@ -359,11 +417,15 @@ export default function BusinessCenterPage() {
                       {service.title}
                     </CardTitle>
                     <CardDescription className="text-base leading-relaxed">{service.description}</CardDescription>
+                    <Badge variant="outline" className="w-fit mt-2">
+                      <MapPin className="h-3 w-3 mr-1" />
+                      {service.location}
+                    </Badge>
                   </CardHeader>
 
                   <CardContent className="relative">
                     <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 gap-2">
                         {service.features.map((feature, idx) => (
                           <div key={idx} className="flex items-center text-sm">
                             <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
@@ -380,7 +442,7 @@ export default function BusinessCenterPage() {
                           </div>
                           <Badge variant="outline" className="bg-background">
                             <Clock className="h-3 w-3 mr-1" />
-                            24hr delivery
+                            Same day
                           </Badge>
                         </div>
 
@@ -401,54 +463,7 @@ export default function BusinessCenterPage() {
         </div>
       </section>
 
-      {/* Delivery Options Section */}
-      <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-6 py-2 mb-6">
-              <Truck className="h-5 w-5 text-primary" />
-              <span className="text-sm font-medium text-primary">Delivery Options</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Fast & Reliable Delivery</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Choose from our flexible delivery options to get your documents when you need them
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {deliveryOptions.map((option, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
-              >
-                <Card className="text-center h-full hover:shadow-lg transition-all bg-background border">
-                  <CardContent className="p-8">
-                    <div
-                      className={`${option.color} bg-current/10 p-4 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center`}
-                    >
-                      <option.icon className={`h-8 w-8 ${option.color}`} />
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2">{option.title}</h3>
-                    <p className="text-muted-foreground mb-4">{option.description}</p>
-                    <div className={`text-2xl font-bold ${option.color}`}>{option.price}</div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works Section */}
+      {/* Testimonials Section */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <motion.div
@@ -459,82 +474,12 @@ export default function BusinessCenterPage() {
             className="text-center mb-16"
           >
             <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-6 py-2 mb-6">
-              <CheckCircle className="h-5 w-5 text-primary" />
-              <span className="text-sm font-medium text-primary">How It Works</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Simple 3-Step Process</h2>
-            <p className="text-xl text-muted-foreground">Get your documents processed in just a few easy steps</p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                step: "1",
-                title: "Upload & Chat",
-                description: "Share your files through our secure chat system and describe your requirements",
-                icon: Upload,
-                color: "from-blue-500 to-cyan-500",
-              },
-              {
-                step: "2",
-                title: "Get Quote",
-                description: "Receive instant pricing, timeline estimates, and delivery options",
-                icon: Clock,
-                color: "from-purple-500 to-pink-500",
-              },
-              {
-                step: "3",
-                title: "Receive Results",
-                description: "Get your professionally processed documents via pickup or express delivery",
-                icon: CheckCircle,
-                color: "from-green-500 to-emerald-500",
-              },
-            ].map((step, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
-                className="text-center relative"
-              >
-                {index < 2 && (
-                  <div className="hidden md:block absolute top-10 left-full w-full h-0.5 bg-gradient-to-r from-primary/50 to-transparent transform -translate-y-1/2 z-0" />
-                )}
-
-                <div className="relative z-10">
-                  <div
-                    className={`bg-gradient-to-br ${step.color} text-white p-6 rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center text-2xl font-bold shadow-lg`}
-                  >
-                    {step.step}
-                  </div>
-                  <step.icon className="h-8 w-8 mx-auto mb-4 text-primary" />
-                  <h3 className="text-xl font-semibold mb-4">{step.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{step.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <div className="inline-flex items-center space-x-2 bg-primary/10 rounded-full px-6 py-2 mb-6">
               <Users className="h-5 w-5 text-primary" />
-              <span className="text-sm font-medium text-primary">Testimonials</span>
+              <span className="text-sm font-medium text-primary">Student Testimonials</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">What Our Customers Say</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">What Our Students Say</h2>
             <p className="text-xl text-muted-foreground">
-              Don't just take our word for it - hear from our satisfied clients
+              Trusted by thousands of students at University of Ilorin and beyond
             </p>
           </motion.div>
 
@@ -572,41 +517,71 @@ export default function BusinessCenterPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-        <div className="container mx-auto px-4 text-center relative z-10">
+      {/* Contact Section */}
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
+            className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Get Started?</h2>
-            <p className="text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
-              Contact us today for professional business services with express delivery options
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Visit Us Today</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Ready to get your academic work done professionally? Visit either of our locations
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                className="bg-white text-blue-600 hover:bg-blue-50 text-lg px-8 py-4 h-auto"
-                onClick={() => setShowChat(true)}
-              >
-                <MessageCircle className="mr-2 h-5 w-5" />
-                Start Chat Now
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-blue-600 text-lg px-8 py-4 h-auto bg-transparent"
-                onClick={() => window.open("tel:+2341234567890")}
-              >
-                <Phone className="mr-2 h-5 w-5" />
-                Call: +234 123 456 7890
-              </Button>
-            </div>
           </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            {[
+              {
+                icon: Phone,
+                title: "Call Us",
+                content: "+234 123 456 7890",
+                action: "tel:+2341234567890",
+              },
+              {
+                icon: Mail,
+                title: "Email Us",
+                content: "business@smartzglobal.com",
+                action: "mailto:business@smartzglobal.com",
+              },
+              {
+                icon: MessageCircle,
+                title: "Live Chat",
+                content: "Get instant support",
+                action: "#",
+              },
+            ].map((contact, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className="text-center"
+              >
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                  <contact.icon className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">{contact.title}</h3>
+                {contact.title === "Live Chat" ? (
+                  <Button
+                    variant="link"
+                    onClick={() => setShowChat(true)}
+                    className="text-muted-foreground hover:text-primary transition-colors p-0"
+                  >
+                    {contact.content}
+                  </Button>
+                ) : (
+                  <a href={contact.action} className="text-muted-foreground hover:text-primary transition-colors">
+                    {contact.content}
+                  </a>
+                )}
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 

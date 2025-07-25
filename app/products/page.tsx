@@ -1,47 +1,25 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
-import { Search, Filter, Grid, List, SlidersHorizontal, Star, Package, Zap, Shield, Truck } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Slider } from "@/components/ui/slider"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Checkbox } from "@/components/ui/checkbox"
+import { motion } from "framer-motion"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { ProductCard } from "@/components/product-card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { getAllProducts } from "@/lib/supabase"
+import { Search, Grid3X3, List, SlidersHorizontal, Package, Star, TrendingUp, Zap } from "lucide-react"
 
-interface Product {
-  id: string
-  name: string
-  description: string
-  price: number
-  original_price?: number
-  image: string
-  category: string
-  subsidiary: string
-  in_stock: boolean
-  rating: number
-  reviews_count: number
-  discount: number
-  featured: boolean
-  created_at: string
-}
-
-const categories = ["All Categories", "Laptops", "Desktops", "Accessories", "Software", "Books", "Business Services"]
-
-const subsidiaries = [
-  { value: "all", label: "All Subsidiaries", icon: Package },
-  { value: "computers", label: "Computers", icon: Package },
-  { value: "books", label: "Books", icon: Package },
-  { value: "business", label: "Business Center", icon: Package },
+const categories = [
+  { value: "all", label: "All Products" },
+  { value: "computers", label: "Computer Accessories" },
+  { value: "books", label: "Books" },
+  { value: "electronics", label: "Electronics" },
+  { value: "accessories", label: "Accessories" },
 ]
 
 const sortOptions = [
@@ -49,349 +27,168 @@ const sortOptions = [
   { value: "price_asc", label: "Price: Low to High" },
   { value: "price_desc", label: "Price: High to Low" },
   { value: "name_asc", label: "Name: A to Z" },
-  { value: "rating", label: "Highest Rated" },
-  { value: "featured", label: "Featured First" },
-]
-
-const features = [
-  { icon: Zap, text: "Fast Delivery", color: "text-yellow-500" },
-  { icon: Shield, text: "Secure Payment", color: "text-green-500" },
-  { icon: Truck, text: "Express Shipping", color: "text-blue-500" },
+  { value: "popular", label: "Most Popular" },
 ]
 
 export default function ProductsPage() {
-  const searchParams = useSearchParams()
-  const [products, setProducts] = useState<Product[]>([])
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<any[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-
-  // Filter states
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "")
-  const [selectedCategory, setSelectedCategory] = useState("All Categories")
-  const [selectedSubsidiary, setSelectedSubsidiary] = useState("all")
-  const [priceRange, setPriceRange] = useState([0, 1000000])
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("all")
   const [sortBy, setSortBy] = useState("newest")
-  const [showInStockOnly, setShowInStockOnly] = useState(false)
-  const [showFeaturedOnly, setShowFeaturedOnly] = useState(false)
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  const [priceRange, setPriceRange] = useState({ min: "", max: "" })
 
   useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true)
+        const data = await getAllProducts()
+        setProducts(data)
+        setFilteredProducts(data)
+      } catch (error) {
+        console.error("Error fetching products:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
     fetchProducts()
   }, [])
 
   useEffect(() => {
-    applyFilters()
-  }, [
-    products,
-    searchQuery,
-    selectedCategory,
-    selectedSubsidiary,
-    priceRange,
-    showInStockOnly,
-    showFeaturedOnly,
-    sortBy,
-  ])
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true)
-      const data = await getAllProducts()
-      setProducts(data)
-
-      // Set initial price range based on products
-      if (data.length > 0) {
-        const prices = data.map((p) => p.price)
-        const minPrice = Math.min(...prices)
-        const maxPrice = Math.max(...prices)
-        setPriceRange([minPrice, maxPrice])
-      }
-    } catch (error) {
-      console.error("Error fetching products:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const applyFilters = () => {
     let filtered = [...products]
 
-    // Search filter
+    // Filter by search query
     if (searchQuery) {
       filtered = filtered.filter(
         (product) =>
           product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          product.category.toLowerCase().includes(searchQuery.toLowerCase()),
+          product.description.toLowerCase().includes(searchQuery.toLowerCase()),
       )
     }
 
-    // Category filter
-    if (selectedCategory !== "All Categories") {
+    // Filter by category
+    if (selectedCategory !== "all") {
       filtered = filtered.filter((product) => product.category === selectedCategory)
     }
 
-    // Subsidiary filter
-    if (selectedSubsidiary !== "all") {
-      filtered = filtered.filter((product) => product.subsidiary === selectedSubsidiary)
+    // Filter by price range
+    if (priceRange.min) {
+      filtered = filtered.filter((product) => product.price >= Number.parseFloat(priceRange.min))
+    }
+    if (priceRange.max) {
+      filtered = filtered.filter((product) => product.price <= Number.parseFloat(priceRange.max))
     }
 
-    // Price range filter
-    filtered = filtered.filter((product) => product.price >= priceRange[0] && product.price <= priceRange[1])
-
-    // In stock filter
-    if (showInStockOnly) {
-      filtered = filtered.filter((product) => product.in_stock)
+    // Sort products
+    switch (sortBy) {
+      case "price_asc":
+        filtered.sort((a, b) => a.price - b.price)
+        break
+      case "price_desc":
+        filtered.sort((a, b) => b.price - a.price)
+        break
+      case "name_asc":
+        filtered.sort((a, b) => a.name.localeCompare(b.name))
+        break
+      case "popular":
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        break
+      default:
+        filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     }
-
-    // Featured filter
-    if (showFeaturedOnly) {
-      filtered = filtered.filter((product) => product.featured)
-    }
-
-    // Sort
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case "price_asc":
-          return a.price - b.price
-        case "price_desc":
-          return b.price - a.price
-        case "name_asc":
-          return a.name.localeCompare(b.name)
-        case "rating":
-          return b.rating - a.rating
-        case "featured":
-          return (b.featured ? 1 : 0) - (a.featured ? 1 : 0)
-        case "newest":
-        default:
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      }
-    })
 
     setFilteredProducts(filtered)
-  }
+  }, [products, searchQuery, selectedCategory, sortBy, priceRange])
 
-  const resetFilters = () => {
+  const clearFilters = () => {
     setSearchQuery("")
-    setSelectedCategory("All Categories")
-    setSelectedSubsidiary("all")
-    if (products.length > 0) {
-      const prices = products.map((p) => p.price)
-      setPriceRange([Math.min(...prices), Math.max(...prices)])
-    }
-    setShowInStockOnly(false)
-    setShowFeaturedOnly(false)
+    setSelectedCategory("all")
     setSortBy("newest")
-  }
-
-  const FilterContent = () => (
-    <div className="space-y-6">
-      {/* Search */}
-      <div>
-        <label className="text-sm font-medium mb-2 block">Search Products</label>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
-            placeholder="Search products..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-      </div>
-
-      {/* Category */}
-      <div>
-        <label className="text-sm font-medium mb-2 block">Category</label>
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger className="bg-background">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="bg-background border shadow-lg">
-            {categories.map((category) => (
-              <SelectItem key={category} value={category}>
-                {category}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Subsidiary */}
-      <div>
-        <label className="text-sm font-medium mb-2 block">Subsidiary</label>
-        <Select value={selectedSubsidiary} onValueChange={setSelectedSubsidiary}>
-          <SelectTrigger className="bg-background">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="bg-background border shadow-lg">
-            {subsidiaries.map((subsidiary) => (
-              <SelectItem key={subsidiary.value} value={subsidiary.value}>
-                <div className="flex items-center space-x-2">
-                  <subsidiary.icon className="h-4 w-4" />
-                  <span>{subsidiary.label}</span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Price Range */}
-      <div>
-        <label className="text-sm font-medium mb-2 block">
-          Price Range: ₦{priceRange[0].toLocaleString()} - ₦{priceRange[1].toLocaleString()}
-        </label>
-        <Slider value={priceRange} onValueChange={setPriceRange} max={1000000} min={0} step={10000} className="mt-2" />
-      </div>
-
-      {/* Checkboxes */}
-      <div className="space-y-3">
-        <div className="flex items-center space-x-2">
-          <Checkbox id="inStock" checked={showInStockOnly} onCheckedChange={setShowInStockOnly} />
-          <label htmlFor="inStock" className="text-sm flex items-center">
-            <Package className="h-4 w-4 mr-1 text-green-500" />
-            In Stock Only
-          </label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Checkbox id="featured" checked={showFeaturedOnly} onCheckedChange={setShowFeaturedOnly} />
-          <label htmlFor="featured" className="text-sm flex items-center">
-            <Star className="h-4 w-4 mr-1 text-yellow-500" />
-            Featured Products
-          </label>
-        </div>
-      </div>
-
-      {/* Reset Filters */}
-      <Button variant="outline" onClick={resetFilters} className="w-full bg-background">
-        Reset All Filters
-      </Button>
-    </div>
-  )
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <LoadingSpinner />
-          </div>
-        </div>
-        <Footer />
-      </div>
-    )
+    setPriceRange({ min: "", max: "" })
   }
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="pt-8">
         {/* Hero Section */}
-        <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-3xl blur-3xl" />
-            <div className="relative bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 rounded-3xl p-12 mb-8">
-              <h1 className="text-4xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                All Products
-              </h1>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-                Discover our complete range of computers, books, and business services with express delivery options
-              </p>
-
-              {/* Features */}
-              <div className="flex flex-wrap justify-center gap-6">
-                {features.map((feature, index) => (
-                  <motion.div
-                    key={feature.text}
-                    className="flex items-center space-x-2 bg-background/50 backdrop-blur-sm rounded-full px-4 py-2"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <feature.icon className={`h-5 w-5 ${feature.color}`} />
-                    <span className="text-sm font-medium">{feature.text}</span>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Desktop Filters Sidebar */}
-          <motion.div
-            className="hidden lg:block w-80 flex-shrink-0"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Card className="sticky top-24 bg-background border shadow-lg">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold flex items-center">
-                    <Filter className="h-5 w-5 mr-2" />
-                    Filters
-                  </h2>
-                </div>
-                <FilterContent />
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Main Content */}
-          <div className="flex-1">
-            {/* Mobile Filters and Controls */}
+        <section className="py-16 bg-gradient-to-br from-primary/10 via-primary/5 to-background">
+          <div className="container mx-auto px-4">
             <motion.div
-              className="flex items-center justify-between mb-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ duration: 0.6 }}
+              className="text-center max-w-4xl mx-auto"
             >
-              <div className="flex items-center space-x-4">
-                {/* Mobile Filter Sheet */}
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" size="sm" className="lg:hidden bg-background">
-                      <SlidersHorizontal className="h-4 w-4 mr-2" />
-                      Filters
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="left" className="w-80 bg-background border-r">
-                    <SheetHeader>
-                      <SheetTitle className="flex items-center">
-                        <Filter className="h-5 w-5 mr-2" />
-                        Filters
-                      </SheetTitle>
-                    </SheetHeader>
-                    <div className="mt-6">
-                      <FilterContent />
-                    </div>
-                  </SheetContent>
-                </Sheet>
-
-                {/* Results Count */}
-                <div className="flex items-center space-x-2">
-                  <Package className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">
-                    {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""} found
-                  </span>
-                </div>
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-6">
+                <Package className="h-10 w-10 text-primary" />
               </div>
 
-              <div className="flex items-center space-x-4">
-                {/* Sort */}
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-48 bg-background">
-                    <SelectValue />
+              <h1 className="text-4xl md:text-6xl font-bold mb-6">Our Products</h1>
+
+              <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+                Discover our extensive collection of premium computer accessories, books, and electronics. Quality
+                products with fast delivery and excellent customer service.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Badge variant="secondary" className="text-sm">
+                  <Star className="mr-1 h-4 w-4" />
+                  4.9/5 Customer Rating
+                </Badge>
+                <Badge variant="secondary" className="text-sm">
+                  <TrendingUp className="mr-1 h-4 w-4" />
+                  1000+ Products
+                </Badge>
+                <Badge variant="secondary" className="text-sm">
+                  <Zap className="mr-1 h-4 w-4" />
+                  Fast Delivery
+                </Badge>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Filters and Search */}
+        <section className="py-8 bg-muted/30">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+              {/* Search */}
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+
+              {/* Filters */}
+              <div className="flex flex-wrap gap-4 items-center">
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Category" />
                   </SelectTrigger>
-                  <SelectContent className="bg-background border shadow-lg">
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category.value} value={category.value}>
+                        {category.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
                     {sortOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
@@ -400,137 +197,95 @@ export default function ProductsPage() {
                   </SelectContent>
                 </Select>
 
-                {/* View Mode Toggle */}
-                <div className="flex border rounded-lg bg-background">
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Min price"
+                    value={priceRange.min}
+                    onChange={(e) => setPriceRange((prev) => ({ ...prev, min: e.target.value }))}
+                    className="w-24"
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Max price"
+                    value={priceRange.max}
+                    onChange={(e) => setPriceRange((prev) => ({ ...prev, max: e.target.value }))}
+                    className="w-24"
+                  />
+                </div>
+
+                <Button variant="outline" onClick={clearFilters}>
+                  <SlidersHorizontal className="mr-2 h-4 w-4" />
+                  Clear
+                </Button>
+
+                <Separator orientation="vertical" className="h-8" />
+
+                <div className="flex gap-1">
                   <Button
-                    variant={viewMode === "grid" ? "default" : "ghost"}
+                    variant={viewMode === "grid" ? "default" : "outline"}
                     size="sm"
                     onClick={() => setViewMode("grid")}
-                    className="rounded-r-none"
                   >
-                    <Grid className="h-4 w-4" />
+                    <Grid3X3 className="h-4 w-4" />
                   </Button>
                   <Button
-                    variant={viewMode === "list" ? "default" : "ghost"}
+                    variant={viewMode === "list" ? "default" : "outline"}
                     size="sm"
                     onClick={() => setViewMode("list")}
-                    className="rounded-l-none"
                   >
                     <List className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
-            {/* Active Filters */}
-            <AnimatePresence>
-              {(searchQuery ||
-                selectedCategory !== "All Categories" ||
-                selectedSubsidiary !== "all" ||
-                showInStockOnly ||
-                showFeaturedOnly) && (
-                <motion.div
-                  className="flex flex-wrap gap-2 mb-6"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                >
-                  {searchQuery && (
-                    <Badge
-                      variant="secondary"
-                      className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
-                      onClick={() => setSearchQuery("")}
-                    >
-                      Search: {searchQuery} ×
-                    </Badge>
-                  )}
-                  {selectedCategory !== "All Categories" && (
-                    <Badge
-                      variant="secondary"
-                      className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
-                      onClick={() => setSelectedCategory("All Categories")}
-                    >
-                      Category: {selectedCategory} ×
-                    </Badge>
-                  )}
-                  {selectedSubsidiary !== "all" && (
-                    <Badge
-                      variant="secondary"
-                      className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
-                      onClick={() => setSelectedSubsidiary("all")}
-                    >
-                      Subsidiary: {subsidiaries.find((s) => s.value === selectedSubsidiary)?.label} ×
-                    </Badge>
-                  )}
-                  {showInStockOnly && (
-                    <Badge
-                      variant="secondary"
-                      className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
-                      onClick={() => setShowInStockOnly(false)}
-                    >
-                      In Stock Only ×
-                    </Badge>
-                  )}
-                  {showFeaturedOnly && (
-                    <Badge
-                      variant="secondary"
-                      className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
-                      onClick={() => setShowFeaturedOnly(false)}
-                    >
-                      Featured Only ×
-                    </Badge>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Products Grid/List */}
-            <AnimatePresence mode="wait">
-              {filteredProducts.length === 0 ? (
-                <motion.div
-                  key="no-products"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="text-center py-16"
-                >
-                  <div className="text-6xl mb-4">🔍</div>
-                  <h3 className="text-xl font-semibold mb-2">No products found</h3>
-                  <p className="text-muted-foreground mb-4">Try adjusting your filters or search terms</p>
-                  <Button
-                    onClick={resetFilters}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                  >
-                    Reset All Filters
-                  </Button>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="products-grid"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className={
-                    viewMode === "grid"
-                      ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-                      : "space-y-4"
-                  }
-                >
-                  {filteredProducts.map((product, index) => (
-                    <motion.div
-                      key={product.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.05 }}
-                    >
-                      <ProductCard product={product} viewMode={viewMode} />
-                    </motion.div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* Results count */}
+            <div className="mt-4 text-sm text-muted-foreground">
+              Showing {filteredProducts.length} of {products.length} products
+            </div>
           </div>
-        </div>
+        </section>
+
+        {/* Products Grid */}
+        <section className="py-8">
+          <div className="container mx-auto px-4">
+            {loading ? (
+              <div className="flex justify-center items-center py-16">
+                <LoadingSpinner />
+              </div>
+            ) : filteredProducts.length === 0 ? (
+              <div className="text-center py-16">
+                <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No products found</h3>
+                <p className="text-muted-foreground mb-4">Try adjusting your search criteria or browse all products</p>
+                <Button onClick={clearFilters}>Clear Filters</Button>
+              </div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6 }}
+                className={
+                  viewMode === "grid"
+                    ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                    : "space-y-4"
+                }
+              >
+                {filteredProducts.map((product, index) => (
+                  <motion.div
+                    key={product.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.05 }}
+                  >
+                    <ProductCard product={product} viewMode={viewMode} />
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </div>
+        </section>
       </main>
 
       <Footer />
